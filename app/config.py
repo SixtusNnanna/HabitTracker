@@ -1,5 +1,6 @@
 import os
 
+
 from dotenv import load_dotenv
 
 
@@ -9,13 +10,16 @@ class ConfigSingleton():
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
-            cls.__instance._load()
+            cls._instance._load()
         return cls._instance
 
     def _load(self):
         load_dotenv()
         self.database_url = os.getenv("DATABASE_URL", "sqlite:///./habits.db")
         self.debug = os.getenv("DEBUG", "False").lower() == "true"
+        self.secrets = self.require("SECRETS")
+        self.algorithm = os.getenv("ALGORITHM", "HS256")
+        self.access_token_exp_time = 30
 
     @staticmethod
     def require(key: str) -> str:
@@ -23,7 +27,7 @@ class ConfigSingleton():
         if value is None:
             raise ValueError(f"Missing required enviroment variable: {key}")
         return value
-    
+
 
 settings = ConfigSingleton()
 

@@ -1,12 +1,12 @@
 from ulid import ULID
 from datetime import datetime, date
-from app.dataase.base import Base
+from app.database.base import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import (
     String, Integer, Text, ForeignKey, Enum, JSON, DateTime, Date, func,
     Numeric
 )
-from app.dataase.utils import MetricType, FrequencyType, LogStatus
+from app.database.utils import MetricType, FrequencyType, LogStatus
 
 
 def generate_ulid():
