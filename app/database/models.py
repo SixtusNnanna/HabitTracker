@@ -4,7 +4,7 @@ from app.database.base import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import (
     String, Integer, Text, ForeignKey, Enum, JSON, DateTime, Date, func,
-    Numeric
+    Numeric, Boolean
 )
 from app.database.utils import MetricType, FrequencyType, LogStatus
 
@@ -26,6 +26,9 @@ class User(Base):
         String(100), unique=True, nullable=False
     )
     hashed_password: Mapped[str] = mapped_column(Text)
+    is_verified: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False
+        )
     habits: Mapped[list["Habit"]] = relationship(
         back_populates="user",
         cascade="all, delete-orphan"

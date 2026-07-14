@@ -37,8 +37,11 @@ class BaseService(Generic[ModelType]):
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
 
-    async def update(self, id: str, **updates: Any) -> ModelType | None:
-        obj = await self.get(id)
+    async def update(
+        self, filters: dict[str, Any],
+        updates: dict[str, Any]
+    ) -> ModelType | None:
+        obj = await self.get_item(**filters)
         if obj is None:
             return None
         for field, val in updates.items():
@@ -47,9 +50,9 @@ class BaseService(Generic[ModelType]):
         await self.session.refresh(obj)
         return obj
 
-    async def delete(self, id):
+    async def delete(self, id, user_id):
         result = await self.session.execute(
-            sa_delete(self.model).where(self.model == id)
+            sa_delete(self.model).filter_by(id=id, user_id=user_id)
         )
         await self.session.commit()
         return result.rowcount > 0

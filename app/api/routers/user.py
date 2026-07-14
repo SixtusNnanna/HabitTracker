@@ -1,10 +1,11 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
-from app.api.dependencies import UserDeps
+from app.api.dependencies import UserDeps, get_token_data, CurrentUserDps
 from app.api.schemas.user import UserResponse, UserCreate
 from app.core.security import TokenData
-from app.utils import create_access_token
+from app.utils import create_access_token, decode_access_token
+from app.database.redis import blacklist_jti
 
 
 router = APIRouter()
@@ -31,3 +32,26 @@ async def login(
     access_token = create_access_token(payload={"id": user.id})
     return {"access_token": access_token, "token_type" : "bearer"}
 
+
+@router.get("/verify")
+async def verify_user(token: str, service: UserDeps):
+    user = await service.verify_email(token)
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired verification link",
+        )
+    return {"message": "Email verified successfully"}
+
+
+@router.post("/logout")
+async def logout(token_data: Annotated[dict, Depends(get_token_data)]):
+    await blacklist_jti(token_data["jti"])
+    return {
+        "User Logout": "Successfullt"
+    }
+
+
+@router.get("/me", response_model = UserResponse)
+async def get_me(user: CurrentUserDps):
+    return user

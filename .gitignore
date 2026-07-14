@@ -33,6 +33,7 @@ ENV/
 *.db
 *.sqlite
 *.sqlite3
+*.ini
 
 # =====================
 # Alembic
@@ -91,3 +92,5 @@ dist/
 # =====================
 
 .ipynb_checkpoints/
+migrations/
+alembic.ini/

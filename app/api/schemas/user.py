@@ -41,7 +41,7 @@ class UserCreate(UserBase):
 
 
 class UserResponse(UserBase):
-    pass
-
+    id: str
+    is_verified: bool
 
 
