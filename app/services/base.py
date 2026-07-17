@@ -1,8 +1,10 @@
-from typing import Generic, TypeVar, Any
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, delete as sa_delete
-from app.database.base import Base
+from typing import Any, Generic, TypeVar
 
+from sqlalchemy import delete as sa_delete
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.database.base import Base
 
 ModelType = TypeVar("ModelType", bound=Base)
 
@@ -38,8 +40,7 @@ class BaseService(Generic[ModelType]):
         return list(result.scalars().all())
 
     async def update(
-        self, filters: dict[str, Any],
-        updates: dict[str, Any]
+        self, filters: dict[str, Any], updates: dict[str, Any]
     ) -> ModelType | None:
         obj = await self.get_item(**filters)
         if obj is None:
@@ -50,11 +51,7 @@ class BaseService(Generic[ModelType]):
         await self.session.refresh(obj)
         return obj
 
-    async def delete(self, id, user_id):
-        result = await self.session.execute(
-            sa_delete(self.model).filter_by(id=id, user_id=user_id)
-        )
+    async def delete(self, **filters):
+        result = await self.session.execute(sa_delete(self.model).filter_by(**filters))
         await self.session.commit()
         return result.rowcount > 0
-
-

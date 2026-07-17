@@ -40,5 +40,5 @@ class HabitService(BaseService[Habit]):
         return await self.list(user_id=user.id)
 
     async def delete_habit(self, id: str, user: User):
-        return await self.delete(id, user.id)
+        return await self.delete(id=id, user_id=user.id)
 

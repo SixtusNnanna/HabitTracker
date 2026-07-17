@@ -92,7 +92,7 @@ class HabitLog(Base):
         nullable=False
     )
     value: Mapped[float | None] = mapped_column(Numeric(10, 2), nullable=True)
-    note: Mapped[str] = mapped_column(Text)
+    note: Mapped[str] = mapped_column(Text, nullable=True)
 
     completed_at: Mapped[datetime] = mapped_column(
         DateTime,
@@ -101,7 +101,4 @@ class HabitLog(Base):
     habit: Mapped[Habit] = relationship(
         back_populates="logs"
     )
-
-
-
 
