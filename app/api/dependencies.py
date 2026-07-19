@@ -1,6 +1,6 @@
 from typing import Annotated
 from jose import JWTError
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Path
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database.models import User, Habit
 from app.database.session import get_session
@@ -9,6 +9,7 @@ from app.services.habits import HabitService
 from app.core.security import oauth2_scheme
 from app.utils import decode_access_token
 from app.database.redis import is_jti_blacklisted
+from app.services.log import LogService
 
 
 SessionDeps = Annotated[AsyncSession, Depends(get_session)]
@@ -63,6 +64,26 @@ def get_habit_service(session: SessionDeps):
 
 
 HabitsDeps = Annotated[HabitService, Depends(get_habit_service)]
+
+
+def get_log_services(session: SessionDeps):
+    return LogService(session)
+
+async def get_current_habit(
+    habit_id: str,
+    user: CurrentUserDps,
+    service: HabitsDeps
+):
+    habit = await service.get_habit_by_id(id=habit_id, user=user)
+    if habit is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Habit not Found"
+        )
+    return habit
+LogDeps = Annotated[LogService, Depends(get_log_services)]
+
+CurrentHabitDeps = Annotated[Habit, Depends(get_current_habit)]
 
 
 

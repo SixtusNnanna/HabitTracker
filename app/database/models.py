@@ -4,7 +4,7 @@ from app.database.base import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import (
     String, Integer, Text, ForeignKey, Enum, JSON, DateTime, Date, func,
-    Numeric, Boolean
+    Numeric, Boolean, UniqueConstraint
 )
 from app.database.utils import MetricType, FrequencyType, LogStatus
 
@@ -65,12 +65,17 @@ class Habit(Base):
     user: Mapped["User"] = relationship(back_populates="habits")
     logs: Mapped[list["HabitLog"]] = relationship(
         back_populates="habit",
-        cascade="all, delete-orphan"
+        cascade="all, delete-orphan",
+        lazy="selectin"
     )
 
 
 class HabitLog(Base):
     __tablename__ = "logs"
+
+    __table_args__ = (UniqueConstraint(
+        "habit_id", "date_", name="uq_habit_date"
+    ),)
 
     id: Mapped[str] = mapped_column(
         String(26),

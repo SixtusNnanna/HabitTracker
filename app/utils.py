@@ -1,8 +1,16 @@
+from enum import Enum
 from ulid import ULID
+from fastapi import HTTPException, status
 from datetime import datetime, timedelta, timezone
 from jose import jwt, JWTError
 
 from app.config import settings
+
+
+class Period(str, Enum):
+    WEEKLY = "weekly"
+    MONTHLY = "monthly"
+    YEARLY = "yearly"
 
 
 def create_access_token(payload: dict, expiry: timedelta | None = None):
@@ -23,7 +31,8 @@ def decode_access_token(token: str):
         )
         return payload
     except JWTError:
-        raise ValueError("Invalid or expires access token")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expires access token")
+
 
 
 
