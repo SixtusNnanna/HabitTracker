@@ -49,11 +49,11 @@ async def get_current_user(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="User not found"
         )
-    # if not user.is_verified:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_401_UNAUTHORIZED,
-    #         detail="Verify your email"
-    #     )
+    if not user.is_verified:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Verify your email"
+        )
     return user
 
 CurrentUserDps = Annotated[User, Depends(get_current_user)]
@@ -68,6 +68,7 @@ HabitsDeps = Annotated[HabitService, Depends(get_habit_service)]
 
 def get_log_services(session: SessionDeps):
     return LogService(session)
+
 
 async def get_current_habit(
     habit_id: str,

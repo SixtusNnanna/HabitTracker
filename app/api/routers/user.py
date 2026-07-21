@@ -10,7 +10,7 @@ from app.database.redis import blacklist_jti
 
 router = APIRouter()
 
-@router.post("/signup", response_model=UserResponse)
+@router.post("/signup", response_model=UserResponse, status_code=201)
 async def signup(service: UserDeps, user_create: UserCreate):
     return await service.signup(user_create)
 
@@ -27,7 +27,7 @@ async def login(
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Ivalid email or password"
+            detail="Invalid email or password"
         )
     access_token = create_access_token(payload={"id": user.id})
     return {"access_token": access_token, "token_type" : "bearer"}

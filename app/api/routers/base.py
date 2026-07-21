@@ -9,5 +9,5 @@ router = APIRouter()
 
 router.include_router(user_router, prefix="/auth", tags=["User"])
 router.include_router(habit_router, prefix="/habit", tags=["Habit"])
-router.include_router(log_router, prefix="/log", tags=["log"])
+router.include_router(log_router, prefix="/habit", tags=["log"])
 router.include_router(stat_router, prefix="/habit", tags=["HabitStat"])
