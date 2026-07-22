@@ -22,7 +22,7 @@ async def log_list(service: LogDeps, habit: CurrentHabitDeps):
     return await service.list_logs(habit.id)
 
 
-@router.post("/{habit_id}/logs", response_model=LogResponse)
+@router.post("/{habit_id}/logs", response_model=LogResponse, status_code=201)
 async def create_log(
     service: LogDeps,
     habit: CurrentHabitDeps,

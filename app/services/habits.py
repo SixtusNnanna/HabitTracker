@@ -30,6 +30,9 @@ class HabitService(BaseService[Habit]):
             habit_update_data: HabitUpdate,
             user: User
             ):
+        habit = await self.get_habit_by_id(id, user)
+        if habit is None:
+            return None
         filters = {"id": id, "user_id": user.id}
         return await self.update(
             filters=filters,
@@ -40,5 +43,8 @@ class HabitService(BaseService[Habit]):
         return await self.list(user_id=user.id)
 
     async def delete_habit(self, id: str, user: User):
+        habit = await self.get_habit_by_id(id, user)
+        if habit is None:
+            return None
         return await self.delete(id=id, user_id=user.id)
 

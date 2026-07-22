@@ -28,12 +28,23 @@ async def create_habit(service: HabitsDeps, habit_data: CreateHabit, user: Curre
 
 @router.put("/{habit_id}/update", response_model=HabitResponse)
 async def update_habit(habit_id: str, service: HabitsDeps, habit_data: HabitUpdate, user: CurrentUserDps):
-    return await service.update_habit(habit_id, habit_data, user)
+    result = await service.update_habit(habit_id, habit_data, user)
+    if result is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You're not allowed to perform this action"
+        )
+    return result
 
 
 @router.delete("/{habit_id}/delete", response_model=None)
 async def delete_habit(habit_id: str, service: HabitsDeps, user: CurrentUserDps):
-    await service.delete_habit(habit_id, user)
+    result = await service.delete_habit(habit_id, user)
+    if result is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You're not allowed to perform this action"
+        )
     return {
         "message": "Habit Has been Deleted Successfully"
     }

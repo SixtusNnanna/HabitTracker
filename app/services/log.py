@@ -28,8 +28,14 @@ class LogService(BaseService[HabitLog]):
                 HabitLog.date_ == log_data.date_,
             )
         )
+        habit_result = await self.session.execute(select(Habit).where(Habit.id == habit_id))
+        habit = habit_result.scalar_one_or_none()
         if existing.scalar_one_or_none():
             raise HTTPException(status_code=409, detail="Habit already logged for this date")
+        if habit is None:
+            raise HTTPException(status_code=404, detail="Habit not found")
+        if not await self.is_due(habit, check_date=date.today()):
+            raise HTTPException(status_code=409, detail="Today is not your due date")
 
         new_log = HabitLog(
             **log_data.model_dump(),
