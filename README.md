@@ -168,4 +168,4 @@ Full interactive documentation (with request/response schemas) is available at `
 
 ## Author
 
-[Sixus]
+[https://github.com/SixtusNnanna] - Sixtus
