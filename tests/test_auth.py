@@ -15,8 +15,6 @@ async def _signup(client, db_session, email="loginuser@example.com", password="N
     return e
 
 
-
-
 @pytest.mark.asyncio
 async def test_sign_up_success(client):
     response = await client.post(
