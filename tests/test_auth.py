@@ -14,6 +14,36 @@ async def _signup(client, db_session, email="loginuser@example.com", password="N
     await db_session.commit()
     return e
 
+async def _get_authorized_header(client, db_session, email="loginuser@example.com", password="Nna@37832435"):
+    await client.post(
+        "/auth/signup",
+        json={"full_name": "Test User", "email": email, "password": password}
+    )
+    result = await db_session.execute(select(User).where(User.email == email))
+    user = result.scalar_one()
+    user.is_verified = True
+    await db_session.commit()
+
+    login_response = await client.post(
+        "auth/token",
+        data={"username": email, "password": password},
+    )
+    token = login_response.json()["access_token"]
+    return {"Authorization": f"Bearer {token}"}
+
+
+@pytest.mark.asyncio
+async def test_token_revocation(client, db_session):
+    headers = await _get_authorized_header(client, db_session)
+    response = await client.post(
+        "/auth/logout",
+        headers=headers
+    )
+    body = response.json()
+    print(f"Tghis is the response bodu, {body}")
+    assert response.status_code == 200
+    assert body["Message"] == "User Logout Successfull"
+
 
 @pytest.mark.asyncio
 async def test_sign_up_success(client):
@@ -113,6 +143,10 @@ async def test_login_token_actually_works(client, db_session):
     print(f"Me response {me_response}")
     assert me_response.status_code == 200
     assert me_response.json()["email"] == email
+
+
+
+
 
 
 

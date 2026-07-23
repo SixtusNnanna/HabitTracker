@@ -48,7 +48,7 @@ async def verify_user(token: str, service: UserDeps):
 async def logout(token_data: Annotated[dict, Depends(get_token_data)]):
     await blacklist_jti(token_data["jti"])
     return {
-        "User Logout": "Successfullt"
+        "Message": "User Logout Successfull"
     }
 
 
